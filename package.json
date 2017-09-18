@@ -1,6 +1,7 @@
 {
  "scripts": {
-  "start": "node ."
+  "start": "node .",
+	"deploy": "rm -rf public/* && cp -r ../website-frontend/build/* public/ && git push heroku master" 
  },
  "dependencies": {
   "body-parser": "^1.18.0",
