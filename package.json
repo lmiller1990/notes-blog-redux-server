@@ -7,6 +7,8 @@
   "bcrpyt": "^2.0.0",
   "bcrypt": "^1.0.3",
   "body-parser": "^1.18.0",
+  "connect-mongo": "^1.3.2",
+  "cookie-parser": "^1.4.3",
   "cors": "^2.8.4",
   "express": "^4.15.4",
   "express-session": "^1.15.5",
