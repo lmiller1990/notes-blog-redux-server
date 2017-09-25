@@ -2,11 +2,18 @@ const cors = require('cors')
 const express = require('express')
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
+const post = require('./post')
+const user = require('./user')
+const session = require('express-session')
 
-const Album = require('./post')
 const config = require('./config')
-
 const app = express()
+
+app.use(session({
+	secret: 'work hard',
+	resave: true,
+	saveUninitialized: false
+}));
 
 app.use(express.static('public'))
 
@@ -17,9 +24,49 @@ const testdburl = `mongodb://${config.DB_USER}:${config.DB_PASSWORD}@ds117093.ml
 mongoose.connect(testdburl, { useMongoClient: true })
 
 const Post = mongoose.model('Post')
+const User = mongoose.model('User')
 
 app.use(bodyParser.json())
 app.use(cors())
+
+function requiresLogin(req, res, next) {
+	console.log(req.session)
+	if (req.session && req.session.userId) {
+		return next();
+	} else {
+		var err = new Error('You must be logged in to view this page.');
+		err.status = 401;
+		return next(err);
+	}
+}
+
+app.post('/login', (req, res, next) => {
+	console.log(req.body.data)
+	User.authenticate(req.body.data.username, req.body.data.password, function (err, user) {
+		if (err) {
+			return res.send(401)
+		} else {
+			console.log(user._id)
+			req.session.userId = user._id
+			console.log(req.session)
+			return res.send(200) 
+		}
+
+	})
+})
+
+app.post('/logout', (req, res, next) => {
+	if (req.session) {
+		req.session.destroy(function(err) {
+			if(err) {
+				console.log('Error logging out')
+				return next(err);
+			} else {
+				return res.send(200)
+			}
+		});
+	}
+})
 
 app.get('/posts', (req, res) => {
 	setTimeout(() => {
@@ -34,7 +81,7 @@ app.get('/posts', (req, res) => {
 	}, 0)
 })
 
-app.get('/posts/:_id', (req, res) => {
+app.get('/posts/:_id', requiresLogin, (req, res) => {
 	setTimeout(() => {
 
 		Post.find({ _id: req.params._id }, (err, post) => {

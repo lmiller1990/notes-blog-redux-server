@@ -1,12 +1,15 @@
 {
  "scripts": {
   "start": "node .",
-	"pre-deploy": "rm -rf public/* && cp -r ../website-frontend/build/* public/" 
+  "pre-deploy": "rm -rf public/* && cp -r ../website-frontend/build/* public/"
  },
  "dependencies": {
+  "bcrpyt": "^2.0.0",
+  "bcrypt": "^1.0.3",
   "body-parser": "^1.18.0",
   "cors": "^2.8.4",
   "express": "^4.15.4",
+  "express-session": "^1.15.5",
   "mongoose": "^4.11.10",
   "morgan": "^1.8.2"
  }
